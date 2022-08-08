@@ -4,12 +4,31 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:gravity="center"
+    android:orientation="vertical"
     android:layout_height="match_parent"
+    android:background="#E6F1EF"
     tools:context=".MainActivity">
 
     <com.example.progressdemo.ProgressCircle
         android:id="@+id/progress_circular"
-        android:layout_width="250dp"
-        android:layout_height="match_parent"/>
-
+        android:layout_width="290dp"
+        android:layout_height="300dp"/>
+    <TextView
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:background="#FFFACD"
+        android:onClick="onClick"
+        />
+    <TextView
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:background="#FFE4E1"
+        android:onClick="onClick1"
+        />
+    <TextView
+        android:layout_width="100dp"
+        android:layout_height="40dp"
+        android:background="#228B22"
+        android:onClick="onClick2"
+        />
 </LinearLayout>

@@ -2,7 +2,6 @@ package com.example.progressdemo;
 
 import android.animation.ValueAnimator;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Color;
 import android.graphics.LinearGradient;
@@ -17,13 +16,13 @@ import android.util.TypedValue;
 import android.view.View;
 import android.view.animation.LinearInterpolator;
 
-
+/**
+ * author：guoy
+ * time:2022/7/27 9:30
+ * description:
+ */
 public class ProgressCircle extends View {
     private float mRingBias = 0.15f;
-    private float mSectionRatio = 5.0f;
-    private RectF mSectionRect = new RectF();
-    protected float mSectionHeight;
-
     protected float mRadius;
     //格子数 总进度
     protected int mMaxProgress;
@@ -37,6 +36,7 @@ public class ProgressCircle extends View {
     private int mColor1;
     private int mColor2;
     private int mInactiveColor;
+    private int mBackgroundColor;
     private float angleDu; //
 
 
@@ -52,6 +52,7 @@ public class ProgressCircle extends View {
     private int maxNumber = 500;//设置最大分数，默认500
     private int currentNumber = 400;//设置当前数字
     private float scale;
+    private float realDU;
 
 
     public ProgressCircle(Context context, AttributeSet attrs, int defStyle) {
@@ -83,15 +84,13 @@ public class ProgressCircle extends View {
         int diameter = Math.min(width, height);
 
         float outerRadius = diameter / 2;
-        float sectionHeight = (float) (1.5 * outerRadius * mRingBias);
-        float sectionWidth = (float) (3 * sectionHeight / mSectionRatio);
-
+        float sectionHeight = (float) (2.5 * outerRadius * mRingBias);
         mRadius = outerRadius - sectionHeight / 2;
-        mSectionRect.set(-sectionWidth / 2, -sectionHeight / 2, sectionWidth / 2, sectionHeight / 2);
-        mSectionHeight = sectionHeight;
         angleDu = (float) (Math.PI / 180f);
         scale = width / 1080f;
         translation = translation * scale;
+
+        mBackgroundColor=Color.parseColor("#E6F1EF");
         initPaint();
     }
     private String endColor="#3BD298";
@@ -143,6 +142,7 @@ public class ProgressCircle extends View {
         textCountPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         textCountPaint.setTypeface(Typeface.DEFAULT_BOLD);
         textCountPaint.setColor(mColor2);
+
     }
 
 
@@ -181,16 +181,32 @@ public class ProgressCircle extends View {
                 float bias = (float) i / (float) (mMaxProgress);
                 int color = interpolateColor(mColor1, mColor2, bias);
                 mPaint.setColor(color);
+                canvas.drawArc(arcRF0, CurrPer, Percentage, true, mPaint);
             } else {
                 canvas.scale(1.0f, 1.0f);
-                mPaint.setColor(mInactiveColor);
+                float v =Math.abs(realDU - (CurrPer + 225.0f)) ;
+                if (v<Percentage && i==mProgress){
+                    //增加的一部分
+                    float bias = (float) i / (float) (mMaxProgress);
+                    int color = interpolateColor(mColor1, mColor2, bias);
+                    mPaint.setColor(color);
+                    canvas.drawArc(arcRF0, CurrPer, v, true, mPaint);
+                    CurrPer = CurrPer + v;
+                    mPaint.setColor(mInactiveColor);
+                    canvas.drawArc(arcRF0,CurrPer,Percentage-v,true,mPaint);
+                    CurrPer = CurrPer -v;
+
+                }else{
+                    mPaint.setColor(mInactiveColor);
+                    canvas.drawArc(arcRF0, CurrPer, Percentage, true, mPaint);
+                }
             }
-            canvas.drawArc(arcRF0, CurrPer, Percentage, true, mPaint);
+
 
             CurrPer = CurrPer + Percentage + wPer;
         }
 
-        PaintArc.setColor(Color.WHITE);
+        PaintArc.setColor(mBackgroundColor);
         canvas.drawCircle(mCenterX, mCenterY, (int) (mRadius / 1.2), PaintArc);
         //绘制梯形
         //计算三个点的坐标
@@ -202,7 +218,7 @@ public class ProgressCircle extends View {
         float cy1 = (float) Math.sin(45 * angleDu) * (mRadius) + mCenterY + translation;
 
         //为Paint设置渐变器
-        Shader mShasder = new LinearGradient(mCenterX, mCenterY, mCenterX, mCenterY + mRadius + 80, new int[]{Color.WHITE, Color.WHITE, mColor2}, new float[]{0f, 0.55f, 1f}, Shader.TileMode.CLAMP);
+        Shader mShasder = new LinearGradient(mCenterX, mCenterY, mCenterX, mCenterY + mRadius + 80, new int[]{mBackgroundColor,mBackgroundColor,mColor2, mColor2}, new float[]{0f, 0.55f,0.8f, 1f}, Shader.TileMode.CLAMP);
         Path path = new Path();
         //translation代表三角形向下位移距离
         path.moveTo(mCenterX, mCenterY + translation);
@@ -261,14 +277,19 @@ public class ProgressCircle extends View {
      * @param currentNumber 当前分数
      * @param startColor 开始颜色
      * @param endColor 结束颜色
+     * @param backColor 背景色
      */
-    public void setMaxNumber(int maxNumber, int currentNumber,String startColor,String endColor) {
+    public void setMaxNumber(int maxNumber, int currentNumber,String startColor,String endColor,String backColor) {
+        this.mBackgroundColor=Color.parseColor(backColor);
         this.startColor=startColor;
         this.endColor=endColor;
         this.maxNumber = maxNumber;
         this.currentNumber = currentNumber;
+        initPaint();
         //根据分数计算当前mProgress
         float v = ((float) currentNumber / maxNumber);
+        //换算成°
+        realDU = v * 270;
         mProgress = (int) (v * mMaxProgress);
         //刻度采用动画
         ValueAnimator valueAnimator = ValueAnimator.ofInt(0, mProgress);
@@ -300,6 +321,7 @@ public class ProgressCircle extends View {
             }
         });
         valueAnimator1.start();
+        initPaint();
     }
 
 
@@ -308,15 +330,4 @@ public class ProgressCircle extends View {
                 context.getResources().getDisplayMetrics());
     }
 
-    protected boolean updateProgress(int progress) {
-        progress = Math.max(0, Math.min(mMaxProgress, progress));
-
-        if (progress != mProgress) {
-            mProgress = progress;
-            invalidate();
-            return true;
-        }
-
-        return false;
-    }
 }

@@ -14,6 +14,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
          progressView = (ProgressCircle)findViewById(R.id.progress_circular);
-         progressView.setMaxNumber(500,150,"#FFC0CB","#FFD700");
+         progressView.setMaxNumber(500,250,"#DCF5EC","#3BD298","#E6F1EF");
+    }
+
+    public void onClick(View view) {
+        progressView.setMaxNumber(500,250,"#FFffff","#FFFACD","#E6F1EF");
+    }
+
+    public void onClick1(View view) {
+        progressView.setMaxNumber(500,323,"#FFffff","#FFE4E1","#E6F1EF");
+    }
+
+    public void onClick2(View view) {
+        progressView.setMaxNumber(500,340,"#FFffff","#228B22","#E6F1EF");
     }
 }
