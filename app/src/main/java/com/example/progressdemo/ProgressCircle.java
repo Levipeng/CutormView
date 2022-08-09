@@ -17,9 +17,7 @@ import android.view.View;
 import android.view.animation.LinearInterpolator;
 
 /**
- * author：guoy
- * time:2022/7/27 9:30
- * description:
+ * 扇形图
  */
 public class ProgressCircle extends View {
     private float mRingBias = 0.15f;
