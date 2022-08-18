@@ -31,8 +31,9 @@
 <!--        android:background="#228B22"-->
 <!--        android:onClick="onClick2"-->
 <!--        />-->
-    <com.example.progressdemo.BarChartViews
+    <com.example.progressdemo.BarChartView
         android:id="@+id/bar_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"/>
+        android:layout_height="250dp"/>
+
 </LinearLayout>
